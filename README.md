@@ -108,42 +108,6 @@ Invoke-RestMethod `
   -Body '{"age":35,"market_drop_30_days":12,"app_logins_7_days":10,"sip_stopped":false}'
 ```
 
-## Upload To GitHub
-
-Run these commands from the project folder:
-
-```powershell
-git init
-git add .
-git commit -m "Initial ABHA dashboard"
-```
-
-Create an empty GitHub repository, then copy the commands GitHub gives you. They usually look like this:
-
-```powershell
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-git push -u origin main
-```
-
-The `.gitignore` file keeps `.venv`, cache files, and local secret files out of GitHub.
-
-## Troubleshooting
-
-If PowerShell blocks activation, run:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
-```
-
-If the browser shows `404 Not Found`, open:
-
-```text
-http://127.0.0.1:8000/admin/dashboard
-```
-
-If dependencies are missing, run:
-
 ```powershell
 pip install -r requirements.txt
 ```
