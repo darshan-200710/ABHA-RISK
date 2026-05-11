@@ -32,7 +32,7 @@ python --version
 Open PowerShell in this project folder:
 
 ```powershell
-cd D:\projects\kunj
+cd D:\projects\folder
 ```
 
 Create a virtual environment:
