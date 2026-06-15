@@ -482,772 +482,1128 @@ async def admin_dashboard():
     User-friendly admin dashboard for non-technical users.
     Simplified UI with large buttons, sliders, and visual feedback.
     """
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ABHA Market Risk Dashboard</title>
-        <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            
-            body { 
-                font-family: 'Arial', sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                min-height: 100vh;
-                padding: 20px;
-            }
-            
-            .wrapper {
-                max-width: 1400px;
-                margin: 0 auto;
-            }
-            
-            header {
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                text-align: center;
-                margin-bottom: 30px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            }
-            
-            h1 {
-                font-size: 2.8em;
-                color: #667eea;
-                margin-bottom: 10px;
-            }
-            
-            .subtitle {
-                color: #666;
-                font-size: 1.1em;
-                margin-bottom: 20px;
-            }
-            
-            .status-bar {
-                display: flex;
-                justify-content: center;
-                gap: 30px;
-                flex-wrap: wrap;
-            }
-            
-            .status-item {
-                background: #f8f9ff;
-                padding: 15px 25px;
-                border-radius: 8px;
-                border-left: 4px solid #667eea;
-            }
-            
-            .status-label {
-                font-size: 0.9em;
-                color: #999;
-            }
-            
-            .status-value {
-                font-size: 1.4em;
-                font-weight: bold;
-                color: #667eea;
-            }
-            
-            .main-container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 25px;
-                margin-bottom: 30px;
-            }
-            
-            .card {
-                background: white;
-                border-radius: 15px;
-                padding: 30px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            }
-            
-            .card h2 {
-                color: #333;
-                margin-bottom: 25px;
-                font-size: 1.8em;
-                border-bottom: 3px solid #667eea;
-                padding-bottom: 15px;
-            }
-            
-            /* Model Selection */
-            .model-grid {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .model-button {
-                padding: 20px;
-                border: 3px solid #ddd;
-                background: white;
-                border-radius: 10px;
-                cursor: pointer;
-                font-size: 1.1em;
-                font-weight: bold;
-                transition: all 0.3s;
-                text-align: left;
-            }
-            
-            .model-button:hover {
-                border-color: #667eea;
-                background: #f8f9ff;
-                transform: translateX(5px);
-            }
-            
-            .model-button.active {
-                background: #667eea;
-                color: white;
-                border-color: #667eea;
-            }
-            
-            .model-desc {
-                font-size: 0.85em;
-                opacity: 0.7;
-                margin-top: 8px;
-            }
-            
-            /* Scenario Presets */
-            .scenario-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-            
-            .scenario-button {
-                padding: 25px 15px;
-                border: none;
-                border-radius: 10px;
-                font-size: 1em;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                color: white;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            }
-            
-            .scenario-mild {
-                background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            }
-            
-            .scenario-moderate {
-                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            }
-            
-            .scenario-severe {
-                background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
-            }
-            
-            .scenario-critical {
-                background: linear-gradient(135deg, #ff6b6b 0%, #cc5555 100%);
-            }
-            
-            .scenario-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-            }
-            
-            .scenario-desc {
-                font-size: 0.8em;
-                opacity: 0.9;
-                margin-top: 5px;
-            }
-            
-            /* Manual Input Section */
-            .input-section {
-                background: #f8f9ff;
-                padding: 25px;
-                border-radius: 10px;
-                margin-bottom: 20px;
-            }
-            
-            .input-group {
-                margin-bottom: 25px;
-            }
-            
-            .input-label {
-                font-weight: bold;
-                color: #333;
-                margin-bottom: 8px;
-                display: flex;
-                justify-content: space-between;
-            }
-            
-            .input-value {
-                color: #667eea;
-                font-size: 1.2em;
-            }
-            
-            input[type="range"] {
-                width: 100%;
-                height: 8px;
-                border-radius: 5px;
-                background: #ddd;
-                outline: none;
-                -webkit-appearance: none;
-                cursor: pointer;
-            }
-            
-            input[type="range"]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 25px;
-                height: 25px;
-                border-radius: 50%;
-                background: #667eea;
-                cursor: pointer;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            }
-            
-            input[type="range"]::-moz-range-thumb {
-                width: 25px;
-                height: 25px;
-                border-radius: 50%;
-                background: #667eea;
-                cursor: pointer;
-                border: none;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            }
-            
-            .checkbox-group {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                font-size: 1.1em;
-                cursor: pointer;
-            }
-            
-            .checkbox-group input[type="checkbox"] {
-                width: 24px;
-                height: 24px;
-                cursor: pointer;
-            }
-            
-            .button-group {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-            
-            .btn-primary {
-                padding: 18px;
-                background: #667eea;
-                color: white;
-                border: none;
-                border-radius: 10px;
-                font-size: 1.1em;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-            }
-            
-            .btn-primary:hover {
-                background: #764ba2;
-                transform: translateY(-2px);
-                box-shadow: 0 7px 20px rgba(102, 126, 234, 0.5);
-            }
-            
-            .btn-secondary {
-                padding: 18px;
-                background: #f0f0f0;
-                color: #333;
-                border: 2px solid #ddd;
-                border-radius: 10px;
-                font-size: 1.1em;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-            
-            .btn-secondary:hover {
-                background: #e8e8e8;
-                border-color: #667eea;
-            }
-            
-            /* Results Display */
-            .result-section {
-                background: #f8f9ff;
-                padding: 25px;
-                border-radius: 10px;
-                margin-top: 20px;
-                display: none;
-            }
-            
-            .result-section.show {
-                display: block;
-                animation: slideIn 0.3s ease-out;
-            }
-            
-            @keyframes slideIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            
-            .result-header {
-                font-size: 1.4em;
-                font-weight: bold;
-                margin-bottom: 15px;
-                color: #333;
-            }
-            
-            .risk-display {
-                display: flex;
-                justify-content: space-around;
-                gap: 15px;
-                flex-wrap: wrap;
-                margin-bottom: 20px;
-            }
-            
-            .risk-box {
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                text-align: center;
-                flex: 1;
-                min-width: 150px;
-            }
-            
-            .risk-label {
-                color: #999;
-                font-size: 0.9em;
-                margin-bottom: 8px;
-            }
-            
-            .risk-value {
-                font-size: 2.2em;
-                font-weight: bold;
-                color: #667eea;
-            }
-            
-            .risk-tier-badge {
-                display: inline-block;
-                padding: 15px 30px;
-                border-radius: 50px;
-                font-size: 1.3em;
-                font-weight: bold;
-                color: white;
-                margin-bottom: 20px;
-            }
-            
-            .tier-normal { background: #00cc00; }
-            .tier-amber { background: #ffaa00; }
-            .tier-red { background: #ff8800; }
-            .tier-critical { background: #ff4444; }
-            
-            .action-box {
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                border-left: 4px solid #667eea;
-                margin-top: 15px;
-            }
-            
-            .action-title {
-                font-weight: bold;
-                color: #333;
-                margin-bottom: 8px;
-            }
-            
-            .action-text {
-                color: #666;
-                line-height: 1.6;
-            }
-            
-            .batch-results {
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                margin-top: 15px;
-                max-height: 400px;
-                overflow-y: auto;
-            }
-            
-            .batch-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-                gap: 10px;
-                padding: 12px;
-                border-bottom: 1px solid #eee;
-                font-size: 0.9em;
-            }
-            
-            .batch-row:hover {
-                background: #f8f9ff;
-            }
-            
-            .batch-header {
-                font-weight: bold;
-                background: #667eea;
-                color: white;
-                padding: 12px;
-                border-radius: 5px;
-            }
-            
-            .loading {
-                text-align: center;
-                color: #667eea;
-                font-size: 1.1em;
-                padding: 20px;
-            }
-            
-            .loading::after {
-                content: '';
-                animation: dots 1.5s steps(4, end) infinite;
-            }
-            
-            @keyframes dots {
-                0%, 20% { content: ''; }
-                40% { content: '.'; }
-                60% { content: '..'; }
-                80%, 100% { content: '...'; }
-            }
-            
-            @media (max-width: 768px) {
-                .main-container {
-                    grid-template-columns: 1fr;
-                }
-                
-                .scenario-grid {
-                    grid-template-columns: 1fr;
-                }
-                
-                h1 {
-                    font-size: 1.8em;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="wrapper">
-            
-            <!-- Header -->
-            <header>
-                <h1>Investor Risk Dashboard</h1>
-                <p class="subtitle">Simple Market Scenario Testing & Risk Analysis</p>
-                <div class="status-bar">
-                    <div class="status-item">
-                        <div class="status-label">System Status</div>
-                        <div class="status-value">Ready</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Current Model</div>
-                        <div class="status-value" id="modelStatus">Loading...</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Investors Loaded</div>
-                        <div class="status-value" id="investorCount">50</div>
-                    </div>
+    return """<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABHA Market Risk Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: #0a0604;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== MESH GRADIENT BACKGROUND ===== */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .mesh-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
+            will-change: transform;
+        }
+
+        .blob-1 {
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, #d97706, #fbbf24);
+            top: -10%;
+            left: -10%;
+            animation: floatBlob1 25s ease-in-out infinite;
+        }
+
+        .blob-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #dc2626, #991b1b);
+            bottom: -15%;
+            right: -8%;
+            animation: floatBlob2 30s ease-in-out infinite;
+        }
+
+        .blob-3 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #b91c1c, #7f1d1d);
+            bottom: 20%;
+            left: -5%;
+            animation: floatBlob3 22s ease-in-out infinite;
+        }
+
+        .blob-4 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, #f59e0b, #fcd34d);
+            top: 30%;
+            right: -10%;
+            animation: floatBlob4 28s ease-in-out infinite;
+        }
+
+        .blob-5 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #92400e, #78350f);
+            top: 50%;
+            left: 40%;
+            animation: floatBlob5 20s ease-in-out infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(80px, 60px) scale(1.05); }
+            66% { transform: translate(-40px, 100px) scale(0.95); }
+        }
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-70px, -50px) scale(1.08); }
+            66% { transform: translate(50px, -80px) scale(0.92); }
+        }
+        @keyframes floatBlob3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(60px, -40px) scale(0.95); }
+            66% { transform: translate(-50px, 30px) scale(1.1); }
+        }
+        @keyframes floatBlob4 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-30px, 70px) scale(1.06); }
+            66% { transform: translate(60px, -30px) scale(0.94); }
+        }
+        @keyframes floatBlob5 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(40px, 40px) scale(1.15); opacity: 0.3; }
+        }
+
+        /* ===== PAGE OVERLAY & WRAPPER ===== */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, #0a0604 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== GLASS CARD MIXIN STYLES ===== */
+        .glass {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            padding: 40px 45px;
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d97706, #f59e0b, #dc2626, transparent);
+        }
+
+        h1 {
+            font-size: 2.6em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fbbf24, #d97706, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.05em;
+            font-weight: 400;
+            margin-bottom: 24px;
+            letter-spacing: 0.3px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(217, 119, 6, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-label {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        /* ===== CARDS ===== */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+        }
+
+        .card h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.55em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card h2 .icon {
+            font-size: 1.2em;
+        }
+
+        .card > p {
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 24px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* ===== MODEL BUTTONS ===== */
+        .model-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .model-button {
+            padding: 18px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .model-button:hover {
+            border-color: rgba(217, 119, 6, 0.4);
+            background: rgba(217, 119, 6, 0.08);
+            transform: translateX(4px);
+            color: #fff;
+        }
+
+        .model-button:hover::before {
+            opacity: 1;
+        }
+
+        .model-button.active {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.25), rgba(245, 158, 11, 0.1));
+            border-color: rgba(217, 119, 6, 0.5);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(217, 119, 6, 0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .model-button.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10%;
+            height: 80%;
+            width: 3px;
+            background: linear-gradient(180deg, #d97706, #f59e0b);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .model-desc {
+            font-size: 0.82em;
+            opacity: 0.5;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        .model-button.active .model-desc {
+            opacity: 0.7;
+        }
+
+        /* ===== SCENARIO BUTTONS ===== */
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .scenario-button {
+            padding: 24px 18px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .scenario-mild {
+            background: linear-gradient(135deg, #059669, #34d399);
+            box-shadow: 0 8px 24px rgba(5, 150, 105, 0.3);
+        }
+
+        .scenario-moderate {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            box-shadow: 0 8px 24px rgba(225, 112, 85, 0.3);
+        }
+
+        .scenario-severe {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            box-shadow: 0 8px 24px rgba(214, 48, 49, 0.3);
+        }
+
+        .scenario-critical {
+            background: linear-gradient(135deg, #d63031, #b71c1c);
+            box-shadow: 0 8px 24px rgba(183, 28, 28, 0.35);
+        }
+
+        .scenario-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+        }
+
+        .scenario-button:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .scenario-desc {
+            font-size: 0.8em;
+            opacity: 0.75;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* ===== INPUT SECTION ===== */
+        .input-section {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        .input-group:last-of-type {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-value {
+            color: #fbbf24;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        input[type="range"]:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d97706, #fbbf24);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.4), 0 2px 8px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.15);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 30px rgba(217, 119, 6, 0.6);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d97706, #fbbf24);
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.4);
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group small {
+            display: block;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 8px;
+            font-size: 0.82em;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1em;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #d97706;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        /* ===== BUTTONS ===== */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #d97706, #fbbf24);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 24px rgba(217, 119, 6, 0.3);
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(217, 119, 6, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* ===== RESULTS ===== */
+        .result-section {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .risk-display {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .risk-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            padding: 20px 28px;
+            border-radius: 14px;
+            text-align: center;
+            flex: 1;
+            min-width: 160px;
+            transition: all 0.3s;
+        }
+
+        .risk-box:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(217, 119, 6, 0.2);
+        }
+
+        .risk-label {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .risk-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .risk-tier-badge {
+            display: inline-block;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .tier-normal {
+            background: linear-gradient(135deg, #059669, #34d399);
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.3);
+        }
+        .tier-amber {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            box-shadow: 0 8px 32px rgba(225, 112, 85, 0.3);
+        }
+        .tier-red {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            box-shadow: 0 8px 32px rgba(214, 48, 49, 0.3);
+        }
+        .tier-critical {
+            background: linear-gradient(135deg, #d63031, #b71c1c);
+            box-shadow: 0 8px 32px rgba(183, 28, 28, 0.35);
+            animation: pulseDanger 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseDanger {
+            0%, 100% { box-shadow: 0 8px 32px rgba(183, 28, 28, 0.35); }
+            50% { box-shadow: 0 8px 48px rgba(183, 28, 28, 0.6), 0 0 60px rgba(183, 28, 28, 0.2); }
+        }
+
+        .action-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 20px;
+            border-left: 3px solid #d97706;
+            margin-top: 16px;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .action-text {
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.7;
+            font-size: 0.92em;
+        }
+
+        /* ===== BATCH RESULTS ===== */
+        .batch-results {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 8px;
+            margin-top: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .batch-results::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .batch-results::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .batch-results::-webkit-scrollbar-thumb {
+            background: rgba(217, 119, 6, 0.3);
+            border-radius: 3px;
+        }
+
+        .batch-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.6);
+            transition: background 0.2s;
+            align-items: center;
+        }
+
+        .batch-row:last-child {
+            border-bottom: none;
+        }
+
+        .batch-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .batch-header {
+            font-weight: 600;
+            background: rgba(217, 119, 6, 0.15);
+            color: #fbbf24;
+            border-radius: 8px;
+            border-bottom: none;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .batch-header:hover {
+            background: rgba(217, 119, 6, 0.15);
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center;
+            color: #fbbf24;
+            font-size: 1.05em;
+            padding: 30px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(217, 119, 6, 0.15);
+            border-top-color: #d97706;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            header { padding: 28px 20px; }
+            h1 { font-size: 1.8em; }
+            .main-container { grid-template-columns: 1fr; }
+            .scenario-grid { grid-template-columns: 1fr; }
+            .card { padding: 24px; }
+            .button-group { grid-template-columns: 1fr; }
+            .status-bar { gap: 10px; }
+            .status-item { padding: 12px 18px; flex: 1; min-width: 120px; }
+            .risk-display { flex-direction: column; }
+            .batch-row { grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.82em; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4em; }
+            .card h2 { font-size: 1.2em; }
+            .scenario-button { padding: 18px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== MESH GRADIENT BACKGROUND ===== -->
+    <div class="mesh-bg">
+        <div class="mesh-blob blob-1"></div>
+        <div class="mesh-blob blob-2"></div>
+        <div class="mesh-blob blob-3"></div>
+        <div class="mesh-blob blob-4"></div>
+        <div class="mesh-blob blob-5"></div>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <div class="wrapper">
+
+        <!-- ===== HEADER ===== -->
+        <header>
+            <h1>Investor Risk Dashboard</h1>
+            <p class="subtitle">AI-powered market scenario testing & behavioral risk analysis</p>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-label">System</div>
+                    <div class="status-value">● Ready</div>
                 </div>
-            </header>
-            
-            <!-- Main Content -->
-            <div class="main-container">
-                
-                <!-- Left Panel: Model Selection -->
-                <div class="card">
-                    <h2>Select AI Model</h2>
-                    <p style="margin-bottom: 20px; color: #666;">Choose which AI model to use for analysis</p>
-                    
-                    <div class="model-grid">
-                        <button class="model-button active" onclick="switchModel('random_forest')">
-                            Random Forest
-                            <div class="model-desc">Recommended for most cases</div>
-                        </button>
-                        <button class="model-button" onclick="switchModel('gradient_boosting')">
-                            Gradient Boosting
-                            <div class="model-desc">More sensitive to early warning signs</div>
-                        </button>
-                        <button class="model-button" onclick="switchModel('logistic_regression')">
-                            Logistic Regression
-                            <div class="model-desc">Simple and easy to explain</div>
-                        </button>
-                    </div>
+                <div class="status-item">
+                    <div class="status-label">Active Model</div>
+                    <div class="status-value" id="modelStatus">Loading...</div>
                 </div>
-                
-                <!-- Right Panel: Quick Scenarios -->
-                <div class="card">
-                    <h2>Quick Market Scenarios</h2>
-                    <p style="margin-bottom: 20px; color: #666;">Test how investors react to different market drops</p>
-                    
-                    <div class="scenario-grid">
-                        <button class="scenario-button scenario-mild" onclick="runScenario('mild')">
-                            Mild Drop
-                            <div class="scenario-desc">10% Market Fall</div>
-                        </button>
-                        <button class="scenario-button scenario-moderate" onclick="runScenario('moderate')">
-                            Moderate Drop
-                            <div class="scenario-desc">15% Market Fall</div>
-                        </button>
-                        <button class="scenario-button scenario-severe" onclick="runScenario('severe')">
-                            Severe Drop
-                            <div class="scenario-desc">18% Market Fall</div>
-                        </button>
-                        <button class="scenario-button scenario-critical" onclick="runScenario('critical')">
-                            Critical Drop
-                            <div class="scenario-desc">20%+ Market Fall</div>
-                        </button>
-                    </div>
+                <div class="status-item">
+                    <div class="status-label">Investors</div>
+                    <div class="status-value" id="investorCount">50</div>
                 </div>
-                
             </div>
-            
-            <!-- Manual Testing -->
+        </header>
+
+        <!-- ===== MAIN GRID ===== -->
+        <div class="main-container">
+
+            <!-- Model Selection -->
             <div class="card">
-                <h2>Custom Investor Analysis</h2>
-                <p style="margin-bottom: 20px; color: #666;">Adjust the sliders to create a custom investor profile</p>
-                
-                <div class="input-section">
-                    <div class="input-group">
-                        <div class="input-label">
-                            <span>Age: <span class="input-value" id="ageDisplay">35</span> years</span>
-                        </div>
-                        <input type="range" id="age" min="25" max="65" value="35" oninput="updateDisplay()">
-                        <small style="color: #999;">Investor's age (typically 25-65)</small>
-                    </div>
-                    
-                    <div class="input-group">
-                        <div class="input-label">
-                            <span>Market Drop: <span class="input-value" id="dropDisplay">10.0</span>%</span>
-                        </div>
-                        <input type="range" id="marketDrop" min="0" max="40" step="0.5" value="10" oninput="updateDisplay()">
-                        <small style="color: #999;">How much the market has fallen</small>
-                    </div>
-                    
-                    <div class="input-group">
-                        <div class="input-label">
-                            <span>App Logins: <span class="input-value" id="loginsDisplay">7</span> times</span>
-                        </div>
-                        <input type="range" id="appLogins" min="1" max="25" value="7" oninput="updateDisplay()">
-                        <small style="color: #999;">How many times they checked their portfolio in 7 days (Higher = More Anxious)</small>
-                    </div>
-                    
-                    <div class="input-group">
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="sipStopped" onchange="updateDisplay()">
-                            <label for="sipStopped">SIP Has Been Stopped</label>
-                        </div>
-                        <small style="color: #999; display: block; margin-top: 8px;">Did they cancel their automatic investments?</small>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button class="btn-primary" onclick="evaluateRisk()">
-                            Analyze This Investor
-                        </button>
-                        <button class="btn-secondary" onclick="resetForm()">
-                            Reset
-                        </button>
-                    </div>
+                <h2><span class="icon">&#9670;</span> Select AI Model</h2>
+                <p>Choose which AI model to use for panic-sell risk analysis</p>
+                <div class="model-grid">
+                    <button class="model-button active" onclick="switchModel(this, 'random_forest')">
+                        Random Forest
+                        <div class="model-desc">Balanced performance &mdash; recommended for most cases</div>
+                    </button>
+                    <button class="model-button" onclick="switchModel(this, 'gradient_boosting')">
+                        Gradient Boosting
+                        <div class="model-desc">More sensitive &mdash; detects early warning signs</div>
+                    </button>
+                    <button class="model-button" onclick="switchModel(this, 'logistic_regression')">
+                        Logistic Regression
+                        <div class="model-desc">Simple &mdash; best for regulatory explainability</div>
+                    </button>
                 </div>
-                
-                <!-- Results -->
-                <div class="result-section" id="resultSection">
-                    <div class="result-header">Analysis Complete</div>
-                    
-                    <div style="text-align: center;">
-                        <div class="risk-tier-badge" id="riskTier"></div>
-                    </div>
-                    
-                    <div class="risk-display">
-                        <div class="risk-box">
-                            <div class="risk-label">Risk Probability</div>
-                            <div class="risk-value" id="probability">--</div>
-                        </div>
-                        <div class="risk-box">
-                            <div class="risk-label">Recommended Action</div>
-                            <div class="risk-value" id="actionBadge" style="font-size: 1.4em;">--</div>
-                        </div>
-                    </div>
-                    
-                    <div class="action-box">
-                        <div class="action-title">What Advisor Should Do:</div>
-                        <div class="action-text" id="actionText"></div>
-                    </div>
-                </div>
-                
             </div>
-            
-            <!-- Batch Testing -->
+
+            <!-- Quick Scenarios -->
             <div class="card">
-                <h2>Test Multiple Scenarios (Batch)</h2>
-                <p style="margin-bottom: 20px; color: #666;">Analyze 5 different investor types at once</p>
-                
-                <button class="btn-primary" onclick="runBatchTest()" style="width: 100%; padding: 20px; font-size: 1.2em;">
-                    Run Batch Test
-                </button>
-                
-                <div class="result-section" id="batchResultSection">
-                    <div class="batch-results">
-                        <div class="batch-row batch-header">
-                            <div>Scenario</div>
-                            <div>Market Drop</div>
-                            <div>Risk</div>
-                            <div>Probability</div>
-                        </div>
-                        <div id="batchResults"></div>
-                    </div>
+                <h2><span class="icon">&#9889;</span> Quick Scenarios</h2>
+                <p>Test investor reactions to different market conditions instantly</p>
+                <div class="scenario-grid">
+                    <button class="scenario-button scenario-mild" onclick="runScenario('mild')">
+                        Mild Drop
+                        <div class="scenario-desc">10% market correction</div>
+                    </button>
+                    <button class="scenario-button scenario-moderate" onclick="runScenario('moderate')">
+                        Moderate Drop
+                        <div class="scenario-desc">15% market decline</div>
+                    </button>
+                    <button class="scenario-button scenario-severe" onclick="runScenario('severe')">
+                        Severe Drop
+                        <div class="scenario-desc">18% market sell-off</div>
+                    </button>
+                    <button class="scenario-button scenario-critical" onclick="runScenario('critical')">
+                        Critical Drop
+                        <div class="scenario-desc">20%+ market crash</div>
+                    </button>
                 </div>
-                
             </div>
-            
+
         </div>
 
-        <script>
-            const API_BASE = window.location.origin;
-            
-            const scenarios = {
-                mild: { age: 35, drop: 10, logins: 7, sip: false },
-                moderate: { age: 40, drop: 15, logins: 15, sip: false },
-                severe: { age: 38, drop: 18, logins: 18, sip: true },
-                critical: { age: 45, drop: 20, logins: 22, sip: true }
-            };
-            
-            function updateDisplay() {
-                document.getElementById('ageDisplay').textContent = document.getElementById('age').value;
-                document.getElementById('dropDisplay').textContent = document.getElementById('marketDrop').value;
-                document.getElementById('loginsDisplay').textContent = document.getElementById('appLogins').value;
+        <!-- ===== CUSTOM ANALYSIS ===== -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2><span class="icon">&#9998;</span> Custom Investor Analysis</h2>
+            <p>Adjust the sliders to build a custom investor profile and evaluate risk</p>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <div class="input-label">
+                        <span>Age</span>
+                        <span><span class="input-value" id="ageDisplay">35</span> years</span>
+                    </div>
+                    <input type="range" id="age" min="25" max="65" value="35" oninput="updateDisplay()">
+                    <small>Investor age range &mdash; typically 25&ndash;65</small>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-label">
+                        <span>Market Drop</span>
+                        <span><span class="input-value" id="dropDisplay">10.0</span>%</span>
+                    </div>
+                    <input type="range" id="marketDrop" min="0" max="40" step="0.5" value="10" oninput="updateDisplay()">
+                    <small>Magnitude of the recent market decline</small>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-label">
+                        <span>App Logins (7 days)</span>
+                        <span><span class="input-value" id="loginsDisplay">7</span> times</span>
+                    </div>
+                    <input type="range" id="appLogins" min="1" max="25" value="7" oninput="updateDisplay()">
+                    <small>Higher login frequency often correlates with anxiety</small>
+                </div>
+
+                <div class="input-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="sipStopped" onchange="updateDisplay()">
+                        <label for="sipStopped">SIP (auto-investment) has been stopped</label>
+                    </div>
+                    <small style="display: block; margin-top: 8px;">A red flag &mdash; indicates potential panic behavior</small>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="evaluateRisk()">
+                        Analyze This Investor
+                    </button>
+                    <button class="btn-secondary" onclick="resetForm()">
+                        Reset Fields
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="result-section" id="resultSection"></div>
+
+        </div>
+
+        <!-- ===== BATCH TESTING ===== -->
+        <div class="card">
+            <h2><span class="icon">&#9776;</span> Batch Scenario Test</h2>
+            <p>Analyze five different investor profiles side-by-side in a single run</p>
+
+            <button class="btn-primary" onclick="runBatchTest()" style="width: 100%;">
+                Run Batch Test
+            </button>
+
+            <div class="result-section" id="batchResultSection"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        const scenarios = {
+            mild:     { age: 35, drop: 10, logins: 7,  sip: false },
+            moderate: { age: 40, drop: 15, logins: 15, sip: false },
+            severe:   { age: 38, drop: 18, logins: 18, sip: true  },
+            critical: { age: 45, drop: 20, logins: 22, sip: true  }
+        };
+
+        function updateDisplay() {
+            document.getElementById('ageDisplay').textContent = document.getElementById('age').value;
+            document.getElementById('dropDisplay').textContent = document.getElementById('marketDrop').value;
+            document.getElementById('loginsDisplay').textContent = document.getElementById('appLogins').value;
+        }
+
+        function getTierClass(tier) {
+            switch (tier.toUpperCase()) {
+                case 'CRITICAL': return 'tier-critical';
+                case 'RED':      return 'tier-red';
+                case 'AMBER':    return 'tier-amber';
+                default:         return 'tier-normal';
             }
-            
-            function getTierClass(tier) {
-                switch(tier.toUpperCase()) {
-                    case 'CRITICAL': return 'tier-critical';
-                    case 'RED': return 'tier-red';
-                    case 'AMBER': return 'tier-amber';
-                    default: return 'tier-normal';
-                }
-            }
-            
-            function getTierEmoji(tier) {
-                switch(tier.toUpperCase()) {
-                    case 'CRITICAL': return 'CRITICAL';
-                    case 'RED': return 'RED';
-                    case 'AMBER': return 'AMBER';
-                    default: return 'NORMAL';
-                }
-            }
-            
-            function switchModel(modelName) {
-                fetch(API_BASE + '/api/v1/switch_model/' + modelName, {method: 'POST'})
-                    .then(r => r.json())
-                    .then(data => {
-                        document.querySelectorAll('.model-button').forEach(b => b.classList.remove('active'));
-                        event.target.closest('.model-button').classList.add('active');
-                        document.getElementById('modelStatus').textContent = modelName.replace('_', ' ').toUpperCase();
-                    });
-            }
-            
-            function runScenario(name) {
-                const s = scenarios[name];
-                document.getElementById('age').value = s.age;
-                document.getElementById('marketDrop').value = s.drop;
-                document.getElementById('appLogins').value = s.logins;
-                document.getElementById('sipStopped').checked = s.sip;
-                updateDisplay();
-                setTimeout(evaluateRisk, 100);
-            }
-            
-            function evaluateRisk() {
-                const payload = {
-                    age: parseInt(document.getElementById('age').value),
-                    market_drop_30_days: parseFloat(document.getElementById('marketDrop').value),
-                    app_logins_7_days: parseInt(document.getElementById('appLogins').value),
-                    sip_stopped: document.getElementById('sipStopped').checked
-                };
-                
-                const resultSection = document.getElementById('resultSection');
-                resultSection.innerHTML = '<div class="loading">Analyzing Investor</div>';
-                resultSection.classList.add('show');
-                
-                fetch(API_BASE + '/api/v1/evaluate_risk', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                })
+        }
+
+        function switchModel(btn, modelName) {
+            fetch(API_BASE + '/api/v1/switch_model/' + modelName, { method: 'POST' })
                 .then(r => r.json())
                 .then(data => {
-                    const tier = data.risk_tier;
-                    const prob = data.ai_panic_probability;
-                    
-                    resultSection.innerHTML = `
-                        <div class="result-header">Analysis Complete</div>
-                        <div style="text-align: center;">
-                            <div class="risk-tier-badge ${getTierClass(tier)}">
-                                ${tier} RISK
-                            </div>
+                    document.querySelectorAll('.model-button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('modelStatus').textContent =
+                        modelName.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                });
+        }
+
+        function runScenario(name) {
+            const s = scenarios[name];
+            document.getElementById('age').value = s.age;
+            document.getElementById('marketDrop').value = s.drop;
+            document.getElementById('appLogins').value = s.logins;
+            document.getElementById('sipStopped').checked = s.sip;
+            updateDisplay();
+            setTimeout(evaluateRisk, 150);
+        }
+
+        function evaluateRisk() {
+            const payload = {
+                age: parseInt(document.getElementById('age').value),
+                market_drop_30_days: parseFloat(document.getElementById('marketDrop').value),
+                app_logins_7_days: parseInt(document.getElementById('appLogins').value),
+                sip_stopped: document.getElementById('sipStopped').checked
+            };
+
+            const container = document.getElementById('resultSection');
+            container.innerHTML = '<div class="loading"><span class="loading-spinner"></span>Analyzing investor profile...</div>';
+            container.classList.add('show');
+
+            fetch(API_BASE + '/api/v1/evaluate_risk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(data => {
+                const tier = data.risk_tier;
+                const prob = data.ai_panic_probability;
+                container.innerHTML = `
+                    <div class="result-header">Analysis Complete</div>
+                    <div style="text-align: center;">
+                        <div class="risk-tier-badge ${getTierClass(tier)}">${tier} RISK</div>
+                    </div>
+                    <div class="risk-display">
+                        <div class="risk-box">
+                            <div class="risk-label">Panic Probability</div>
+                            <div class="risk-value">${prob}%</div>
                         </div>
-                        <div class="risk-display">
-                            <div class="risk-box">
-                                <div class="risk-label">Panic Probability</div>
-                                <div class="risk-value">${prob}%</div>
-                            </div>
-                        </div>
-                        <div class="action-box">
-                            <div class="action-title">What You Should Do:</div>
-                            <div class="action-text">${data.recommended_action}</div>
+                    </div>
+                    <div class="action-box">
+                        <div class="action-title">Recommended Advisor Action</div>
+                        <div class="action-text">${data.recommended_action}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function runBatchTest() {
+            const container = document.getElementById('batchResultSection');
+            container.innerHTML = '<div class="loading"><span class="loading-spinner"></span>Running batch evaluation...</div>';
+            container.classList.add('show');
+
+            const testScenarios = [
+                { age: 30, market_drop_30_days: 5,  app_logins_7_days: 3,  sip_stopped: false },
+                { age: 35, market_drop_30_days: 10, app_logins_7_days: 7,  sip_stopped: false },
+                { age: 40, market_drop_30_days: 15, app_logins_7_days: 15, sip_stopped: false },
+                { age: 45, market_drop_30_days: 18, app_logins_7_days: 20, sip_stopped: true  },
+                { age: 50, market_drop_30_days: 22, app_logins_7_days: 25, sip_stopped: true  }
+            ];
+
+            fetch(API_BASE + '/api/v1/batch_evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scenarios: testScenarios })
+            })
+            .then(r => r.json())
+            .then(data => {
+                let html = '<div class="batch-results">';
+                html += '<div class="batch-row batch-header"><div>Investor</div><div>Market Drop</div><div>Risk Tier</div><div>Probability</div></div>';
+                data.results.forEach((r, i) => {
+                    html += `
+                        <div class="batch-row">
+                            <div><strong>#${i + 1}</strong></div>
+                            <div>${r.market_drop_30_days}%</div>
+                            <div>${r.risk_tier}</div>
+                            <div>${r.ai_panic_probability}%</div>
                         </div>
                     `;
                 });
-            }
-            
-            function runBatchTest() {
-                const batchSection = document.getElementById('batchResultSection');
-                batchSection.innerHTML = '<div class="loading">Running Batch Test</div>';
-                batchSection.classList.add('show');
-                
-                const testScenarios = [
-                    {age: 30, market_drop_30_days: 5, app_logins_7_days: 3, sip_stopped: false},
-                    {age: 35, market_drop_30_days: 10, app_logins_7_days: 7, sip_stopped: false},
-                    {age: 40, market_drop_30_days: 15, app_logins_7_days: 15, sip_stopped: false},
-                    {age: 45, market_drop_30_days: 18, app_logins_7_days: 20, sip_stopped: true},
-                    {age: 50, market_drop_30_days: 22, app_logins_7_days: 25, sip_stopped: true}
-                ];
-                
-                fetch(API_BASE + '/api/v1/batch_evaluate', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({scenarios: testScenarios})
-                })
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('age').value = 35;
+            document.getElementById('marketDrop').value = 10;
+            document.getElementById('appLogins').value = 7;
+            document.getElementById('sipStopped').checked = false;
+            document.getElementById('resultSection').classList.remove('show');
+            updateDisplay();
+        }
+
+        // Initialise on load
+        window.onload = () => {
+            updateDisplay();
+            fetch(API_BASE + '/health')
                 .then(r => r.json())
-                .then(data => {
-                    let html = '<div class="batch-row batch-header"><div>Scenario</div><div>Market Drop</div><div>Risk</div><div>Probability</div></div>';
-                    data.results.forEach((r, i) => {
-                        html += `
-                            <div class="batch-row">
-                                <div>Investor ${i+1}</div>
-                                <div>${r.market_drop_30_days}%</div>
-                                <div>${r.risk_tier}</div>
-                                <div>${r.ai_panic_probability}%</div>
-                            </div>
-                        `;
-                    });
-                    batchSection.innerHTML = `<div class="batch-results">${html}</div>`;
+                .then(d => {
+                    const m = (d.active_model || 'unknown').replace(/_/g, ' ');
+                    document.getElementById('modelStatus').textContent =
+                        m.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 });
-            }
-            
-            function resetForm() {
-                document.getElementById('age').value = 35;
-                document.getElementById('marketDrop').value = 10;
-                document.getElementById('appLogins').value = 7;
-                document.getElementById('sipStopped').checked = false;
-                document.getElementById('resultSection').classList.remove('show');
-                updateDisplay();
-            }
-            
-            // Initialize on page load
-            window.onload = () => {
-                updateDisplay();
-                fetch(API_BASE + '/health')
-                    .then(r => r.json())
-                    .then(d => {
-                        document.getElementById('modelStatus').textContent = (d.active_model || 'unknown').replace('_', ' ').toUpperCase();
-                    });
-            };
-        </script>
-    </body>
-    </html>
-    """
+        };
+    </script>
+</body>
+</html>"""
 
 
 @app.get("/api/v1/model_info")
