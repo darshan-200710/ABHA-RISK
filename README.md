@@ -8,8 +8,6 @@ It includes:
 - Sliders for age, market drop, app logins, and SIP stopped status.
 - Batch testing for multiple example investor scenarios.
 
-This project runs fully on your computer. It does not need a Hugging Face token or any paid API key.
-
 ## Important Note
 
 This is an educational MVP, not financial advice. The app uses synthetic sample data and simple model training when the server starts.
@@ -32,7 +30,7 @@ python --version
 Open PowerShell in this project folder:
 
 ```powershell
-cd D:\projects\kunj
+cd 
 ```
 
 Create a virtual environment:
